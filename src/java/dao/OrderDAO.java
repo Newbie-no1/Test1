@@ -91,7 +91,7 @@ public class OrderDAO extends DBContext {
                         + "        [notes],\n"
                         + "        [status],\n"
                         + "        ROW_NUMBER() OVER (ORDER BY order_id DESC) AS RowNum\n"
-                        + "    FROM [Flower].[dbo].[Order]\n"
+                        + "    FROM [dbo].[Order]\n"
                         + ")\n"
                         + "SELECT \n"
                         + "    [order_id],\n"

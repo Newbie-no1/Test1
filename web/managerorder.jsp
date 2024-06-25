@@ -33,6 +33,44 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
+        <style>
+            .indented-label {
+                margin-left: 50px; /* Điều chỉnh giá trị này để thay đổi khoảng cách thụt lề */
+            }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .pagination a {
+                margin: 0 5px;
+                padding: 10px 15px;
+                text-decoration: none;
+                color: #007bff;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+            .pagination a:hover {
+                background-color: #007bff;
+                color: #fff;
+            }
+            .pagination a.active {
+                background-color: #007bff;
+                color: #fff;
+                border-color: #007bff;
+            }
+            .pagination a.disabled {
+                color: #ddd;
+                pointer-events: none;
+            }
+            .not-paying {
+                color: red;
+            }
+            .paid {
+                color: green;
+            }
+        </style>
     </head>
 
     <body class="biolife-body">
@@ -47,7 +85,7 @@
                         <span class="sr-only">Toggle navigation</span>
                     </button>
                     <!-- Liên kết đến trang chủ, thay thế cho logo -->
-                    <a class="navbar-brand" >Online Shop</a>
+                    <a class="navbar-brand" href="HomePage">Online Shop</a>
                 </div>
 
                 <!-- Phần thân thanh điều hướng có thể thu gọn (COLLAPSIBLE NAVBAR) -->
@@ -56,11 +94,11 @@
                     <!-- Links -->
                     <ul class="nav navbar-nav">
 
-                       
+
                         <li >
                             <a style="text-decoration: none;" href="ManagerOrder"> Manage Order</a>
                         </li>
-                       
+
                         <li >
                             <a href="Logout" style="color: black;" class="login-link"><i class="fa fa-sign-out" style="font-size: 18px; margin-left: 10px;" aria-hidden="true"></i></a>
                         </li>
@@ -90,6 +128,8 @@
                                         <option value="2">Shipping</option>
                                         <option value="3">Delivered</option>
                                         <option value="4">Canceled</option>
+                                        <option value="5">Received</option>
+                                        <option value="6">Confirm</option>
                                     </select>
                                 </div>
                             </div>
@@ -117,80 +157,99 @@
 
                     <!-- Bảng hiển thị đơn hàng -->
                     <form id="orderForm" action="DeleteOrder" method="post">
-
-                        <table class="table" style="margin-top: 20px; margin-bottom: 20px;">
+                        <table class="table" style="margin-top: 20px; margin-bottom: 20px; margin-left: 20px; margin-right: 20px">
                             <thead>
-                                <!-- Tiêu đề cột bảng -->
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" id="selectAllCheckbox" onchange="selectAllCheckboxes()">
-                                    </th>
-                                    <th class="product-name">Order Id </th>
-                                    <th class="product-price">Order Date</th>
-                                    <th class="product-price">UserName</th>
-                                    <th class="product-price">Phone</th>
-                                    <th class="product-price">Address</th>
-                                    <th class="product-quantity">Total Bill</th>
-                                    <th class="product-subtotal">Note</th>
-                                    <th class="product-subtotal">Status</th>
-                                    <th class="product-subtotal">Details</th>
-                                </tr>
+                            <label class="indented-label">Role ID: ${a.getRoles().getId()}</label>
+                            <div id="roleLabel"></div>
+
+                            <!-- Tiêu đề cột bảng -->
+                            <tr>
+                                <th class="product-name">Order Id </th>
+                                <th class="product-price">Order Date</th>
+                                <th class="product-price">UserName</th>
+                                <th class="product-price">Phone</th>
+                                <th class="product-price">Address</th>
+                                <th class="product-quantity">Total Bill</th>
+                                <th class="product-subtotal">Note</th>
+                                <th class="product-subtotal">Current Status</th> <!-- Cột trạng thái mới -->
+                                <th class="product-subtotal">Update Status</th> <!-- Cột cập nhật trạng thái -->
+                                <th class="product-subtotal">Details</th>
+                            </tr>
                             </thead>
                             <tbody>
                                 <!-- Vòng lặp hiển thị thông tin đơn hàng -->
-                                <!-- Vòng lặp hiển thị thông tin đơn hàng -->
                                 <c:forEach var="o" items="${ol}">
                                     <tr class="cart_item">
-                                        <!-- Thêm checkbox -->
-                                        <td class="product-checkbox">
-                                            <input type="checkbox" name="orderCheckbox" value="${o.getId()}" onchange="handleCheckboxClick(this)">
-                                        </td>
                                         <!-- Các cột thông tin đơn hàng -->
-                                        <td class="product-thumbnail">
-                                            ${o.getId()}
-                                        </td>
-                                        <td class="product-thumbnail">
-                                            ${o.getFormattedDateTime()}
-                                        </td>
-                                        <td class="product-price">
-                                            ${o.getUserName()}
-                                        </td>
-                                        <td class="product-price">
-                                            ${o.getPhone()}
-                                        </td>
-                                        <td class="product-price">
-                                            ${o.getAddress()}
-                                        </td>
-                                        <td class="product-quantity">
-                                            ${o.getTotal()}
-                                        </td>
+                                        <td class="product-thumbnail">${o.getId()}</td>
+                                        <td class="product-thumbnail">${o.getFormattedDateTime()}</td>
+                                        <td class="product-price">${o.getUserName()}</td>
+                                        <td class="product-price">${o.getPhone()}</td>
+                                        <td class="product-price">${o.getAddress()}</td>
+                                        <td class="product-quantity">${o.getTotal()}</td>
+                                        <td class="product-subtotal">${o.getNotes()}</td>
                                         <td class="product-subtotal">
-                                            ${o.getNotes()}
+                                            <!-- Hiển thị trạng thái hiện tại -->
+                                            ${o.getStatus() == 1 ? "Pending" : ""}
+                                            ${o.getStatus() == 2 ? "Shipping" : ""}
+                                            ${o.getStatus() == 3 ? "Delivering" : ""}
+                                            ${o.getStatus() == 4 ? "Cancel" : ""}
+                                            ${o.getStatus() == 5 ? "Received" : ""}
+                                            ${o.getStatus() == 6 ? "Confirm" : ""}
                                         </td>
                                         <td class="product-subtotal">
                                             <input type="hidden" class="orderid" value="${o.getId()}">
-                                            <select id="statusSelect" name="status" onchange="confirmStatusUpdate(this)">
-                                                <option value="1" ${o.getStatus() == 1 ? "selected" : ""}>Pending</option>
-                                                <option value="2" ${o.getStatus() == 2 ? "selected" : ""}>Shipping</option> 
-                                                <option value="3" ${o.getStatus() == 3 ? "selected" : ""}>Delivering</option> 
-                                                <option value="4" ${o.getStatus() == 4 ? "selected" : ""}>Cancel</option>
-                                                <option value="5" ${o.getStatus() == 5 ? "selected" : ""}>Received</option>
-                                            </select>
-
+                                            <!-- Kiểm tra nếu trạng thái là Cancel hoặc vai trò là 6 và trạng thái là Pending hoặc Confirm -->
+                                            <c:if test="${!(o.getStatus() == 4 || (a.getRoles().getId() == 6 && (o.getStatus() == 1 || o.getStatus() == 6)))}">
+                                                <select id="statusSelect" name="status" onchange="confirmStatusUpdate(this)" <c:if test="${a.getRoles().getId() == 4}">disabled</c:if>>
+                                                        <!-- Điều kiện hiển thị các option theo từng vai trò -->
+                                                    <c:if test="${a.getRoles().getId() == 3}">
+                                                        <option value="1" ${o.getStatus() == 1 ? "selected" : ""}>Pending</option>
+                                                        <option value="6" ${o.getStatus() == 6 ? "selected" : ""}>Confirm</option>
+                                                        <option value="4" ${o.getStatus() == 4 ? "selected" : ""}>Cancel</option>
+                                                    </c:if>
+                                                    <c:if test="${a.getRoles().getId() == 4}">
+                                                        <option value="6" ${o.getStatus() == 6 ? "selected" : ""}>Confirm</option>
+                                                    </c:if>
+                                                    <c:if test="${a.getRoles().getId() == 5}">
+                                                        <option value="2" ${o.getStatus() == 2 ? "selected" : ""}>Shipping</option>
+                                                    </c:if>
+                                                    <c:if test="${a.getRoles().getId() == 6}">
+                                                        <option value="3" ${o.getStatus() == 3 ? "selected" : ""}>Delivering</option>
+                                                        <option value="4" ${o.getStatus() == 4 ? "selected" : ""}>Cancel</option>
+                                                        <option value="5" ${o.getStatus() == 5 ? "selected" : ""}>Received</option>
+                                                    </c:if>
+                                                </select>
+                                            </c:if>
                                         </td>
-
                                         <td class="product-subtotal">
                                             <!-- Liên kết đến trang chi tiết đơn hàng -->
-                                            <a href="./managerorderdetails?oid=${o.getId()}">Details</a>
+                                            <c:if test="${!(a.getRoles().getId() == 6 && (o.getStatus() == 1 || o.getStatus() == 6))}">
+                                                <a href="./managerorderdetails?oid=${o.getId()}">Details</a>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
-
                             </tbody>
                         </table>
+                        <div class="pagination">
+                            <c:if test="${currentPage > 1}">
+                                <a href="ManagerOrder?page=${currentPage - 1}&fdate=${param.fdate}&tdate=${param.tdate}&search=${param.search}&uid=${param.uid}">Previous</a>
+                            </c:if>
+                            <c:forEach begin="1" end="${noOfPages}" var="i">
+                                <a href="ManagerOrder?page=${i}&fdate=${param.fdate}&tdate=${param.tdate}&search=${param.search}&uid=${param.uid}" class="${currentPage == i ? 'active' : ''}">${i}</a>
+                            </c:forEach>
+                            <c:if test="${currentPage < noOfPages}">
+                                <a href="ManagerOrder?page=${currentPage + 1}&fdate=${param.fdate}&tdate=${param.tdate}&search=${param.search}&uid=${param.uid}">Next</a>
+                            </c:if>
+                        </div>
                         <input type="hidden" id="selectedOrderIds" name="selectedOrderIds" value="">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected orders?')">Delete Selected Orders</button>
+                        <!--<button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected orders?')">Delete Selected Orders</button>-->
                     </form>
+
+
+
+
 
                 </div>
 
@@ -210,79 +269,106 @@
         <script src="assets/js/biolife.framework.js"></script>
         <script src="assets/js/functions.js"></script>        
         <script>
-                            function selectAllCheckboxes() {
-                                var checkboxes = document.getElementsByName("orderCheckbox");
-                                var selectAllCheckbox = document.getElementById("selectAllCheckbox");
-                                var selectedOrderIdsInput = document.getElementById("selectedOrderIds");
+                                                    function selectAllCheckboxes() {
+                                                        var checkboxes = document.getElementsByName("orderCheckbox");
+                                                        var selectAllCheckbox = document.getElementById("selectAllCheckbox");
+                                                        var selectedOrderIdsInput = document.getElementById("selectedOrderIds");
 
-                                var selectedOrderIds = [];
-                                for (var i = 0; i < checkboxes.length; i++) {
-                                    checkboxes[i].checked = selectAllCheckbox.checked;
+                                                        var selectedOrderIds = [];
+                                                        for (var i = 0; i < checkboxes.length; i++) {
+                                                            checkboxes[i].checked = selectAllCheckbox.checked;
 
-                                    if (checkboxes[i].checked) {
-                                        selectedOrderIds.push(checkboxes[i].value);
-                                    }
-                                }
+                                                            if (checkboxes[i].checked) {
+                                                                selectedOrderIds.push(checkboxes[i].value);
+                                                            }
+                                                        }
 
-                                console.log("Selected Order IDs: ", selectedOrderIds);
-                                selectedOrderIdsInput.value = selectedOrderIds.join(",");
-                            }
+                                                        console.log("Selected Order IDs: ", selectedOrderIds);
+                                                        selectedOrderIdsInput.value = selectedOrderIds.join(",");
+                                                    }
 
-                            function handleCheckboxClick(checkbox) {
-                                var selectedOrderIdsInput = document.getElementById("selectedOrderIds");
+                                                    function handleCheckboxClick(checkbox) {
+                                                        var selectedOrderIdsInput = document.getElementById("selectedOrderIds");
 
-                                var selectedOrderIds = [];
-                                var checkboxes = document.getElementsByName("orderCheckbox");
+                                                        var selectedOrderIds = [];
+                                                        var checkboxes = document.getElementsByName("orderCheckbox");
 
-                                for (var i = 0; i < checkboxes.length; i++) {
-                                    if (checkboxes[i].checked) {
-                                        selectedOrderIds.push(checkboxes[i].value);
-                                    }
-                                }
+                                                        for (var i = 0; i < checkboxes.length; i++) {
+                                                            if (checkboxes[i].checked) {
+                                                                selectedOrderIds.push(checkboxes[i].value);
+                                                            }
+                                                        }
 
-                                console.log("Selected Order IDs: ", selectedOrderIds);
-                                selectedOrderIdsInput.value = selectedOrderIds.join(",");
-                            }
-                            function cancelOrder(orderId) {
-                                var confirmation = confirm("Are you sure you want to cancel this order?");
-                                if (confirmation) {
-                                    document.getElementById("orderIdInput").value = orderId;
-                                    document.getElementById("cancelOrderForm").submit();
-                                }
-                            }
+                                                        console.log("Selected Order IDs: ", selectedOrderIds);
+                                                        selectedOrderIdsInput.value = selectedOrderIds.join(",");
+                                                    }
+                                                    function cancelOrder(orderId) {
+                                                        var confirmation = confirm("Are you sure you want to cancel this order?");
+                                                        if (confirmation) {
+                                                            document.getElementById("orderIdInput").value = orderId;
+                                                            document.getElementById("cancelOrderForm").submit();
+                                                        }
+                                                    }
 
-                            function confirmStatusUpdate(selectElement) {
-                                var status = selectElement.value;
-                                var orderId = selectElement.parentNode.querySelector('.orderid').value;
-                                var confirmationMessage = "";
+                                                    function confirmStatusUpdate(selectElement) {
+                                                        var status = selectElement.value;
+                                                        var orderId = selectElement.parentNode.querySelector('.orderid').value;
+                                                        var confirmationMessage = "";
 
-                                switch (status) {
-                                    case "1":
-                                        confirmationMessage = "Are you sure you want to mark this order as Pending?";
-                                        break;
-                                    case "2":
-                                        confirmationMessage = "Are you sure you want to mark this order as Shipping?";
-                                        break;
-                                    case "3":
-                                        confirmationMessage = "Are you sure you want to mark this order as Delivering?";
-                                        break;
-                                    case "4":
-                                        confirmationMessage = "Are you sure you want to cancel this order?";
-                                        break;
-                                    case "5":
-                                        confirmationMessage = "Have you received this order?";
-                                        break;
-                                    default:
-                                        confirmationMessage = "Are you sure you want to change the status of this order?";
-                                        break;
-                                }
+                                                        switch (status) {
+                                                            case "1":
+                                                                confirmationMessage = "Are you sure you want to mark this order as Pending?";
+                                                                break;
+                                                            case "2":
+                                                                confirmationMessage = "Are you sure you want to mark this order as Shipping?";
+                                                                break;
+                                                            case "3":
+                                                                confirmationMessage = "Are you sure you want to mark this order as Delivering?";
+                                                                break;
+                                                            case "4":
+                                                                confirmationMessage = "Are you sure you want to cancel this order?";
+                                                                break;
+                                                            case "5":
+                                                                confirmationMessage = "Have you received this order?";
+                                                                break;
+                                                            case "6":
+                                                                confirmationMessage = "Have you confirm this order?";
+                                                                break;
+                                                            default:
+                                                                confirmationMessage = "Are you sure you want to change the status of this order?";
+                                                                break;
+                                                        }
 
-                                if (confirm(confirmationMessage)) {
-                                    window.location.href = "changestatus?status=" + status + "&orderId=" + orderId;
-                                } else {
-                                }
-                            }
+                                                        if (confirm(confirmationMessage)) {
+                                                            window.location.href = "changestatus?status=" + status + "&orderId=" + orderId;
+                                                        } else {
+                                                        }
+                                                    }
         </script>
+        <script>
+            var roleId = ${a.getRoles().getId()}; // Giả sử giá trị này được lấy từ đối tượng Java đúng cách
+            var roleName;
+
+            switch (roleId) {
+                case 3:
+                    roleName = 'Saler';
+                    break;
+                case 4:
+                    roleName = 'Marketing';
+                    break;
+                case 5:
+                    roleName = 'Staff';
+                    break;
+                case 6:
+                    roleName = 'Shipper';
+                    break;
+                default:
+                    roleName = 'Role ID: ' + roleId;
+            }
+
+            document.getElementById('roleLabel').innerHTML = '<label style="margin-left:50px;">' + roleName + '</label>';
+        </script>
+
 
 
 

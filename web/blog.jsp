@@ -92,81 +92,76 @@
                             </select>
                         </div>
                     </form>
-                
-                <c:if test="${sessionScope['account'].getRoles().getId()==2}">
-                    <form action="BannerManager">
-                        <div class="modal-header" >
-                            <button class="btn btn-submit "  id="btnLogin" type="submit">Manage Banner</button>
 
-                        </div>   
-                    </form>
-                </c:if>
+                    <!-- Hiển thị danh sách blog -->
+                    <div class="biolife-tab biolife-tab-contain sm-margin-top-34px">
+                        <div class="tab-head tab-head__icon-top-layout icon-top-layout">
+                            <div class="container">
+                                <div class="row" style="margin-bottom: 50px;">
+                                    <ul class="products-list" style="list-style: none; padding: 0;">
 
-                <!-- Hiển thị danh sách blog -->
-                <div class="biolife-tab biolife-tab-contain sm-margin-top-34px">
-                    <div class="tab-head tab-head__icon-top-layout icon-top-layout">
-                        <div class="row" style="margin-bottom: 50px;">
-                            <ul class="products-list" style="list-style: none;">
+                                        <!-- Duyệt qua từng blog và hiển thị thông tin -->
+                                        <c:forEach var="p" items="${blist}">
+                                            <li class="product-item col-lg-4 col-md-6 col-xs-12" style="min-height: 350px; margin-bottom: 30px;">
+                                                <div class="contain-product layout-default">
+                                                    <div class="product-thumb">
 
-                                <!-- Duyệt qua từng blog và hiển thị thông tin -->
-                                <c:forEach var="p" items="${blist}">
-                                    <li class="product-item col-lg-4 col-xs-6" style="min-height: 350px;">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
+                                                        <!-- Link đến trang chi tiết của blog -->
+                                                        <a href="BlogDetail?bid=${p.getId()}" class="link-to-product" style="display: block; width: 100%; height: auto;">
+                                                            <img src="${p.getBanner()}" alt="img" style="display: block; margin: 0 auto; width: 300px; height: 200px;">
+                                                        </a>
+                                                    </div>
+                                                    <div class="info text-center">
 
-                                                <!-- Link đến trang chi tiết của blog -->
-                                                <a href="BlogDetail?bid=${p.getId()}" class="link-to-product" style="display: block; width: 300px; height: 200px; padding: auto;">
-                                                    <img src="${p.getBanner()}" alt="img" width="300" height="200" style="margin-left: 8%;">
-                                                </a>
-                                            </div>
-                                            <div class="info">
+                                                        <!-- Tiêu đề và ngày đăng của blog -->
+                                                        <h4 class="product-title" style="margin-top: 21px;"><a style="color: black; font-size: 21px;" href="BlogDetail?bid=${p.getId()}" class="pr-name">${p.getBlogTitle()}</a></h4>
+                                                        <div class="price">
 
-                                                <!-- Tiêu đề và ngày đăng của blog -->
-                                                <h4 class="product-title"  style="margin-top: 21px; "><a style="color: black;font-size: 21px;" href="./BlogDetail?bid=${p.getId()}" class="pr-name"> ${p.getBlogTitle()}</a></h4>
-                                                <div class="price">
-
-                                                    <!-- Ngày đăng được định dạng sang dd/MM/yyyy -->
-                                                    <ins><span class="price-amount" style="color: black; font-weight: 100;font-size: 15px" >
-                                                            Posted date: <span class="currencySymbol"></span><fmt:formatDate pattern="dd-MM-yyyy" value="${p.getCreateDate()}"/> <span style="margin-left: 10px">&#128065;${p.getViewCount()} </span> </span></ins>
+                                                            <!-- Ngày đăng được định dạng sang dd/MM/yyyy -->
+                                                            <ins><span class="price-amount" style="color: black; font-weight: 100; font-size: 15px;">
+                                                                    Posted date: <fmt:formatDate pattern="dd-MM-yyyy" value="${p.getCreateDate()}"/> <span style="margin-left: 10px">&#128065;${p.getViewCount()}</span>
+                                                                </span></ins>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </c:forEach>
-                            </ul>
+                                            </li>
+                                        </c:forEach>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+
+                    <!-- Phân trang -->
+                    <nav style="margin-left: 42%" aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=1">First Page</a></li>
+                                <c:forEach var="i"  begin="1" end="${numberPage}" step="1">
+                                <li class="page-item  ${index==i?"active":""}"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=${i}">${i}</a></li>
+                                </c:forEach>
+                            <li class="page-item"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=${numberPage}">Last Page</a></li>
+                        </ul>
+                    </nav>
+
                 </div>
-
-                <!-- Phân trang -->
-                <nav style="margin-left: 42%" aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=1">First Page</a></li>
-                            <c:forEach var="i"  begin="1" end="${numberPage}" step="1">
-                            <li class="page-item  ${index==i?"active":""}"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=${i}">${i}</a></li>
-                            </c:forEach>
-                        <li class="page-item"><a class="page-link" href="BlogList?cateId=${param["cateId"]}&name=${param["name"]}&index=${numberPage}">Last Page</a></li>
-                    </ul>
-                </nav>
-
             </div>
         </div>
-    </div>
 
-    <!-- Include footer -->
-    <jsp:include page="footer.jsp"/>
+        <!-- Include footer -->
+        <jsp:include page="footer.jsp"/>
 
-    <!-- Scroll Top Button -->
-    <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
+        <!-- Scroll Top Button -->
+        <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
 
-    <!-- Import các file JavaScript cần thiết -->
-    <script src="assets/js/jquery-3.4.1.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.countdown.min.js"></script>
-    <script src="assets/js/jquery.nice-select.min.js"></script>
-    <script src="assets/js/jquery.nicescroll.min.js"></script>
-    <script src="assets/js/slick.min.js"></script>
-    <script src="assets/js/biolife.framework.js"></script>
-    <script src="assets/js/functions.js"></script>
-</body>
+        <!-- Import các file JavaScript cần thiết -->
+        <script src="assets/js/jquery-3.4.1.min.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/jquery.countdown.min.js"></script>
+        <script src="assets/js/jquery.nice-select.min.js"></script>
+        <script src="assets/js/jquery.nicescroll.min.js"></script>
+        <script src="assets/js/slick.min.js"></script>
+        <script src="assets/js/biolife.framework.js"></script>
+        <script src="assets/js/functions.js"></script>
+    </body>
 </html>
