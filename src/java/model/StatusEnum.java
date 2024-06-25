@@ -11,13 +11,10 @@ package model;
  */
 
 public enum StatusEnum {
-    PENDING(1, "Pending"),
+    PENDING(1, "Peding"),
     SHIPPING(2, "Shipping"),
     DELIVERED(3, "Delivered"),
-    CANCELED(4, "Canceled"),
-    RECEIVED(5, "Received"),
-    CONFIRM(6, "Confirm");
-    
+    CANCELED(4, "Canceled"),;
 
     public final Integer code;
     public final String name;

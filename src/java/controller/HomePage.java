@@ -45,21 +45,23 @@ public class HomePage extends HttpServlet {
             ProductDAO pdao = new ProductDAO();
             AdminDAO adao = new AdminDAO();
             BannerDAO badao = new BannerDAO();
+             BlogDAO bdao = new BlogDAO();
+             
             ArrayList<Product> plist = pdao.getProductt("", "", 1, "1");
-            ArrayList<Product> plist2 = pdao.getProductt("2", "", 1, "1");
-            ArrayList<Product> plist1 = pdao.getTopSelling();
+
             ArrayList<Banner> balist = badao.getAllBanner();
             ArrayList<Category> clist = pdao.getCategory();
+            List<Blog> blogLst = bdao.get6NewestBlog();
             request.setAttribute("plist", plist);
-            request.setAttribute("plist1", plist1);
-            request.setAttribute("plist2", plist2);
+
             request.setAttribute("balist", balist);
              request.setAttribute("clist", clist);
-//            response.getWriter().print(plist.size());
+             request.setAttribute("blogLst", blogLst);
 
-            BlogDAO bdao = new BlogDAO();
-            List<Blog> blogLst = bdao.get6NewestBlog();
-            request.setAttribute("blogLst", blogLst);
+
+           
+            
+            
             
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {

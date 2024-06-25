@@ -24,14 +24,13 @@ public class Order {
     private String phone;
     private String userName;
     private String address;
+    private String paymentMethod;
+    private String paymentStatus;
 
-    public Order(int id, User user, Date orderDate, double total, String notes) {
-        this.id = id;
-        this.user = user;
-        this.orderDate = orderDate;
-        this.total = total;
-        this.notes = notes;
+    public Order() {
     }
+
+
 
     public Order(int id, User user, Date orderDate, double total, String notes, int status) {
         this.id = id;
@@ -43,7 +42,9 @@ public class Order {
         this.statusName = StatusEnum.findByCode(status).name;
     }
 
-    public Order(int id, User user, Date orderDate, double total, String notes, int status, String phone, String userName, String address) {
+    
+
+    public Order(int id, User user, Date orderDate, double total, String notes, int status, String phone, String userName, String address, String paymentMethod, String paymentStatus) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
@@ -53,6 +54,17 @@ public class Order {
         this.statusName = StatusEnum.findByCode(status).name;
         this.phone = phone;
         this.userName = userName;
+        this.address = address;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Order(int orderId, User user, Date orderDate, double total, int status, String address) {
+        this.id = orderId;
+        this.user = user;
+        this.orderDate = orderDate;
+        this.total = total;
+        this.status = status;
         this.address = address;
     }
 
@@ -139,6 +151,22 @@ public class Order {
     public String getFormattedDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         return dateFormat.format(orderDate);
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
 }

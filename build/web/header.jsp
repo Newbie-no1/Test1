@@ -50,16 +50,7 @@
                                 </c:if>
                             </a>
                         </li>
-                        <li>
-                            <c:if test="${sessionScope['account'].getRoles().getId() == 2}">
-                            <li><a href="ManagerUser">Manager Page</a></li>
-                            </c:if>
-                        </li>
-                        <li>
-                            <c:if test="${sessionScope['account'].getRoles().getId() == 3}">
-                            <li><a href="ManagerProduct">Manager Page</a></li>
-                            </c:if>
-                        </li>
+                       
                     </ul>
 
                     <!-- Search -->

@@ -33,7 +33,7 @@
             .sidebar {
                 margin-top: 80px;
                 margin-left: -40px;
-                background-color: #f8f9fa;
+                background-color: inherit;
                 padding: 15px;
                 border-radius: 5px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -44,23 +44,30 @@
             }
             .sidebar .btn-primary {
                 background-color: #007bff;
-                border: none;
-                border-radius: 20px;
+                border-color: #007bff;
+                font-weight: bold;
+                transition: background-color 0.3s, border-color 0.3s;
             }
             .sidebar .categories h2,
             .sidebar .sort-default h2,
             .sidebar .static-links h2 {
-                font-size: 1.2em;
-                margin-bottom: 10px;
+                
+                
+               font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                color: #333;
             }
             .sidebar .list-group-item {
-                border: none;
-                padding: 10px 15px;
-                font-size: 0.9em;
+                 border: none;
+                padding: 10px 0;
+                font-size: 16px;
+                color: #555;
+                transition: background-color 0.3s, color 0.3s;
             }
             .sidebar .list-group-item a {
                 text-decoration: none;
-                color: #007bff;
+                color: inherit;
             }
             .sidebar .list-group-item a.active {
                 font-weight: bold;
@@ -93,12 +100,12 @@
                             <div class="carousel-inner" role="listbox">
                                 <div class="item active">
                                     <a href="./banner0.jsp">
-                                        <img src="img/z5475507570017_e02186104ef761e544cd6c152f385cfe.jpg" alt="banner1" width="460" height="345">
+                                        <img src="img/anh0.jpg" alt="banner1" width="460" height="345">
                                     </a>
                                 </div>
                                 <c:forEach var="p" items="${balist}">
                                     <div class="item">
-                                        <a href="./ManagerBanner?bid=${p.getId()}">
+                                        <a href="./Banner1?bid=${p.getId()}">
                                             <img src="img/${p.getImg()}" alt="${p.getId()}" width="460" height="345">
                                         </a>
                                     </div>   
@@ -198,7 +205,7 @@
                         </div>
 
 
-                        <div class="product-tab z-index-20 sm-margin-top-193px xs-margin-top-30px">
+<!--                        <div class="product-tab z-index-20 sm-margin-top-193px xs-margin-top-30px">
                             <div class="container">
                                 <div class="biolife-tab biolife-tab-contain sm-margin-top-34px">
                                     <div class="tab-head tab-head__icon-top-layout icon-top-layout">
@@ -237,7 +244,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
 
 
@@ -246,33 +253,35 @@
                             <div class="tab-head tab-head__icon-top-layout icon-top-layout">
                                 <h1 style="color: black; font-weight: 600; color: #000000; border-bottom: 1px solid #000000">Newest Blog</h1>
                                 <div class="row" style="margin-bottom: 50px;">
-                                    <ul class="products-list" style="list-style: none; margin-left: 0px; padding-left: 0px;">
+                                    <ul class="products-list" style="list-style: none;margin-left: 0px;padding-left: 0px">
                                         <c:forEach var="p" items="${blogLst}">
-                                            <li class="product-item col-lg-4 col-xs-6" style="min-height: 350px;">
-                                                <div class="contain-product layout-default">
-                                                    <div class="product-thumb">
-                                                        <!-- Link đến trang chi tiết của blog -->
-                                                        <a href="BlogDetail?bid=${p.getId()}" class="link-to-product" style="display: block; width: 100%; height: 200px; padding: auto;">
-                                                            <img src="${p.getBanner()}" alt="img" style="display: block; width: 100%; height: 100%; object-fit: cover;">
-                                                        </a>
-                                                    </div>
-                                                    <div class="info">
-                                                        <!-- Tiêu đề và ngày đăng của blog -->
-                                                        <h4 class="product-title" style="margin-top: 21px;"><a style="color: black; font-size: 21px;" href="./BlogDetail?bid=${p.getId()}" class="pr-name">${p.getBlogTitle()}</a></h4>
-                                                        <div class="price">
-                                                            <!-- Ngày đăng được định dạng sang dd/MM/yyyy -->
-                                                            <ins><span class="price-amount" style="color: black; font-weight: 100; font-size: 15px;">
-                                                                    Posted date: <span class="currencySymbol"></span><fmt:formatDate pattern="dd-MM-yyyy" value="${p.getCreateDate()}" /> <span style="margin-left: 10px">&#128065;${p.getViewCount()} </span> </span></ins>
-                                                        </div>
-                                                    </div>
+                                          <li class="product-item col-lg-4 col-xs-6" style="min-height: 350px;">
+                                        <div class="contain-product layout-default">
+                                            <div class="product-thumb">
+
+                                                <!-- Link đến trang chi tiết của blog -->
+                                                <a href="BlogDetail?bid=${p.getId()}" class="link-to-product" style="display: block; width: 300px; height: 200px; padding: auto;">
+                                                    <img src="${p.getBanner()}" alt="img" width="300" height="200" style="margin-left: 8%;">
+                                                </a>
+                                            </div>
+                                            <div class="info">
+
+                                                <!-- Tiêu đề và ngày đăng của blog -->
+                                                <h4 class="product-title"  style="margin-top: 21px; "><a style="color: black;font-size: 21px;" href="./BlogDetail?bid=${p.getId()}" class="pr-name"> ${p.getBlogTitle()}</a></h4>
+                                                <div class="price">
+
+                                                    <!-- Ngày đăng được định dạng sang dd/MM/yyyy -->
+                                                    <ins><span class="price-amount" style="color: black; font-weight: 100;font-size: 15px" >
+                                                            Posted date: <span class="currencySymbol"></span><fmt:formatDate pattern="dd-MM-yyyy" value="${p.getCreateDate()}"/> <span style="margin-left: 10px">&#128065;${p.getViewCount()} </span> </span></ins>
                                                 </div>
-                                            </li>
+                                            </div>
+                                        </div>
+                                    </li>
                                         </c:forEach>
                                     </ul>
                                 </div>
                             </div>
                         </div>
-
                         <!--end blog-->
 
                     </div>

@@ -22,9 +22,6 @@ public class FeedbackDAO extends DBContext {
     private ProductDAO pdao = new ProductDAO();
     private UserDAO udao = new UserDAO();
 
-    
-    
-    
     public void insertFeedback(int pid, int uid, String content, String rate, String img) {
         try {
             String sql = "insert into feedback values (?,?,?,?,?,GETDATE(),1)";
@@ -56,7 +53,23 @@ public class FeedbackDAO extends DBContext {
         }
         return FeedbackList;
     }
-    
+
+    public Feedback getFeedbackByfid(int pid) {
+        try {
+            String sql = "  select * from feedback where feedback_id =  " + pid;
+            PreparedStatement stm = connection.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                User u = udao.getUserById(rs.getInt(3));
+                Product p = pdao.getProductById(rs.getInt(2));
+                Feedback fb = new Feedback(rs.getInt(1), rs.getInt(2), u, rs.getInt(4), rs.getString(5), rs.getString(6), rs.getDate(7), rs.getBoolean(8), p);
+                return fb;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public String getNumberFeedbackByProId(int pid) {
         try {
@@ -102,11 +115,13 @@ public class FeedbackDAO extends DBContext {
         }
         return FeedbackList;
     }
+
     public static void main(String[] args) {
         for (Feedback allFeedback : new FeedbackDAO().getAllFeedbacks()) {
             System.out.println(allFeedback);
         }
     }
+
     public ArrayList<Feedback> getFeedbackByConditions(String star, String status, String fullname, String product, int index) {
         ArrayList<Feedback> FeedbackList = new ArrayList<>();
         try {

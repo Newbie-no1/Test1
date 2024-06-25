@@ -58,9 +58,12 @@ public class ManageBanner extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        BannerDAO dao = new BannerDAO();
+         if (action == null) {
         String search = request.getParameter("search") == null ? "" : request.getParameter("search");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
-        BannerDAO dao = new BannerDAO();
+        
         int totalproduct = dao.searchBanner(search, status).size();
         int numberPage = (int) Math.ceil((double) totalproduct / 6);
         int index;
@@ -75,6 +78,17 @@ public class ManageBanner extends HttpServlet {
         request.setAttribute("index", index);
 
         request.getRequestDispatcher("bannerList.jsp").forward(request, response);
+        
+    } else {
+            if ("edit".equals(action)) {
+                dao.updateStatusByFbID(request.getParameter("status"), request.getParameter("fid"));
+            }
+            if ("switch".equals(action)) {
+                dao.updateStatusByFbID(request.getParameter("status"), request.getParameter("fid"));
+            }
+            response.sendRedirect("ManageBanner");
+
+        }
     }
 
     /**

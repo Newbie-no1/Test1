@@ -136,7 +136,7 @@ public class RegisterController extends HttpServlet {
 
                 String emailSubject = "Verify Account";
                 String emailContent = "You need to verify your account by clicking the link:"
-                        + "http://localhost:8080/PerfumeShop/checkEmailSignUp?code=" + code;
+                        + "http://localhost:8080/OnlineShopPrj/checkEmailSignUp?code=" + code;
                 try {
                     // Tạo và gửi thông điệp email
                     Message message = new MimeMessage(sessions);

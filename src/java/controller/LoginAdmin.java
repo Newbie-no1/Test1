@@ -22,7 +22,8 @@ import model.User;
 
 /**
  *
- * @author *
+ * @author 
+
  */
 public class LoginAdmin extends HttpServlet {
 
@@ -103,43 +104,23 @@ public class LoginAdmin extends HttpServlet {
             if (admin != null) {
                 session.setAttribute("account", admin);
                 session.setAttribute("img", admin.getImg()); // Cập nhật đường dẫn ảnh vào session
-                session.setAttribute("userRole", admin.getRoles().getId()); // Lưu vai trò vào session
-                System.out.println("Admin roles: " + admin.getRoles().getId());
 
                 mess = "admin";
             }
 
-//            if (mess.equals("user")) {
-//                response.sendRedirect("./HomePage");
-//            }
-//            if (mess.equals("admin")) {
-//                if (admin.getRoles().getId() == 3 || admin.getRoles().getId() == 4 || admin.getRoles().getId() == 5 || admin.getRoles().getId() == 6) {
-//                    response.sendRedirect("./ManagerOrder");
-//                } //                else if(admin.getRoles().getId() == 4){
-//                //                    response.sendRedirect("./ManagerProduct");
-//                //                }
-//                else {
-//                    response.sendRedirect("./ManagerAdmin");
-//                }
-//            } else {
-//
-//                request.setAttribute("mess", mess);
-//                request.getRequestDispatcher("login.jsp").forward(request, response);
-//            }
             if (mess.equals("user")) {
+
                 response.sendRedirect("./HomePage");
-            } else if (mess.equals("admin")) {
-                Integer userRole = (Integer) session.getAttribute("userRole");
-                if (userRole == 3 || userRole == 5 || userRole == 6) {
+            }
+            if (mess.equals("admin")) {
+                if(admin.getRoles().getId() == 3){
                     response.sendRedirect("./ManagerOrder");
-                }
-                if (userRole == 4) {
+                }else if(admin.getRoles().getId() == 4){
                     response.sendRedirect("./ManagerProduct");
-                }
-                else {
-                    response.sendRedirect("./ManagerAdmin");
-                }
+                }else
+                response.sendRedirect("./ManagerAdmin");
             } else {
+
                 request.setAttribute("mess", mess);
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }

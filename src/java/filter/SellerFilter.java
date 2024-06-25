@@ -117,7 +117,7 @@ public class SellerFilter implements Filter {
 
             Object object = session.getAttribute("account");
             Admin u = (Admin) object;
-            if (u.getRoles().getId() != 3 && u.getRoles().getId() != 4 && u.getRoles().getId() != 5 && u.getRoles().getId() != 6) {
+            if (u.getRoles().getId() != 3) {
                 if (!response.isCommitted()) {
                     res.getWriter().println("<h1>You cant access this site</h1>");
                 }

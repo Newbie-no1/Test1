@@ -31,7 +31,7 @@ public class CancelOrder extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -60,7 +60,7 @@ public class CancelOrder extends HttpServlet {
             throws ServletException, IOException {
         int oid = Integer.valueOf(request.getParameter("oid"));
         int status = Integer.parseInt(request.getParameter("status"));
-        if (status == 2 || status == 3 || status == 5 || status == 6) {
+        if (status == 2) {
             response.sendRedirect("MyOrder?error=This+Order+cannot+be+updated&oid=" + oid);
         } else {
             OrderDAO odao = new OrderDAO();

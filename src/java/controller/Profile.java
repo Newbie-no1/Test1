@@ -98,7 +98,7 @@ public class Profile extends HttpServlet {
                 return;
             }
 
-            else if (!name.matches("[a-zA-Z0-9 ]+")) {
+            else if (!name.matches("[a-zA-Z0-9_]+")) {
                 request.setAttribute("mess", "Invalid characters in username");
                 request.getRequestDispatcher("userprofile.jsp").forward(request, response);
                 return;

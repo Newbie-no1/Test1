@@ -38,7 +38,7 @@
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#alignment-example" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
                     </button>
-                    <a class="navbar-brand" href="HomePage">Online Shop</a>
+                    <a class="navbar-brand">Online Shop</a>
                 </div>
                 <!-- COLLAPSIBLE NAVBAR -->
                 <div class="collapse navbar-collapse" id="alignment-example">
@@ -120,7 +120,7 @@
                                                 <th>Rated star <i class="fa fa-caret-down" aria-hidden="true"></i></th>
                                                 <th>Status 
                                                     <i class="fa fa-caret-down" aria-hidden="true"></i></th>
-                                                <th  width="3%">Edit</th>
+                                                <th  width="3%">Details</th>
                                                 <th  width="3%">View</th>
                                                 <th width="3%">Switch</th>
                                             </tr>
@@ -139,7 +139,7 @@
                                                     <c:if test="${!f.active}">
                                                         <td><span class="label label-danger" style="font-size: 15px">Inacive</span></td>
                                                     </c:if>
-                                                    <td><a class="btn btn-primary"  data-toggle="modal" data-target="#EditModalUP${f.feedback_id}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+                                                    <td><a href="FeedbackDetail?fid=${f.feedback_id}"><i class="fa fa-eye" aria-hidden="true">details</i></a></td>
                                                     <td><a class="btn btn-danger" data-toggle="modal" data-target="#View${f.feedback_id}"><i class="fa fa-eye" aria-hidden="true"></i></a></td>
                                                             <c:if test="${f.active==true}">
                                                         <td><a class="btn btn-warning" href="FeedbackList?action=switch&fid=${f.feedback_id}&status=0">InActive</a></td>

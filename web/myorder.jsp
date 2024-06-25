@@ -88,9 +88,9 @@
                             <table class="table table-hover table-striped" style="font-size: 20px;">
                                 <thead>
                                     <tr>
-<!--                                        <th>
+                                        <th>
                                             <input type="checkbox" id="selectAllCheckbox" onchange="selectAllCheckboxes()">
-                                        </th>-->
+                                        </th>
                                         <th class="product-name">Order Id </th>
                                         <th class="product-price">Order Date</th>
                                         <th class="product-quantity">Total Bill</th>
@@ -104,9 +104,9 @@
                                 <tbody>
                                     <c:forEach var="o" items="${ol}">
                                         <tr class="cart_item">
-<!--                                            <td class="product-subtotal">
+                                            <td class="product-subtotal">
                                                 <input type="checkbox" name="orderCheckbox" value="${o.getId()}" onclick="handleCheckboxClick(this)">
-                                            </td>-->
+                                            </td>
                                             <td class="product-thumbnail" >
                                                 ${o.getId()}
                                             </td>
@@ -150,10 +150,10 @@
                                 </c:if>
                             </div>
                             <div>
-<!--                                <form method="post" action="./DeleteOrder">
+                                <form method="post" action="./DeleteOrder">
                                     <input type="hidden" id="selectedOrderIds" name="selectedOrderIds" value="">
                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected orders?')">Delete Selected Orders</button>
-                                </form>-->
+                                </form>
                             </div>
                         </div>
 

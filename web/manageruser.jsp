@@ -33,7 +33,7 @@
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#alignment-example" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
                     </button>
-                    <a class="navbar-brand" href="HomePage">Online Shop</a>
+                    <a class="navbar-brand" >Online Shop</a>
                 </div>
                 <!-- COLLAPSIBLE NAVBAR -->
                 <div class="collapse navbar-collapse" id="alignment-example">

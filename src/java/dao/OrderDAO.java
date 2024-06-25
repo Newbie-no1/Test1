@@ -5,6 +5,7 @@
  */
 package dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,29 +65,53 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    public boolean insertOrder1(User u, Cart cart, String notes) {
+    public Order insertOrder1(User u, Cart cart, String notes, String paymentMethod) {
         PreparedStatement ps = null;
         ResultSet rs = null;
+        Order ordertoget = null;
         try {
             // Thêm 1 đơn hàng mới vào cơ sở dữ liệu
-            String sql = "insert into [Order] ([user_id],[order_date],[total],[notes],[status]) values (?,GETDATE(), ?, ?,1)";
+            String sql = "insert into [Order] ([user_id],[order_date],[total],[notes],[status],[payment_method],[payment_status]) values (?,GETDATE(), ?, ?, 1, ?, ?)";
             ps = connection.prepareStatement(sql);
             ps.setInt(1, u.getId());
             ps.setDouble(2, cart.getTotalMoney());
             ps.setString(3, notes);
+            ps.setString(4, paymentMethod);
+            ps.setString(5, "Not paying");
             int rowsInserted = ps.executeUpdate();
 
             if (rowsInserted > 0) {
                 // Lấy Id đơn hàng vừa thêm vào để sử dụng cho việc thêm thông tin đơn hàng
-                String sql1 = "select top 1 order_id from [Order] order by order_id desc";
+                String sql1 = "WITH OrdersWithRowNumbers AS (\n"
+                        + "    SELECT \n"
+                        + "        [order_id],\n"
+                        + "        [user_id],\n"
+                        + "        [order_date],\n"
+                        + "        [total],\n"
+                        + "        [notes],\n"
+                        + "        [status],\n"
+                        + "        ROW_NUMBER() OVER (ORDER BY order_id DESC) AS RowNum\n"
+                        + "    FROM [Flower].[dbo].[Order]\n"
+                        + ")\n"
+                        + "SELECT \n"
+                        + "    [order_id],\n"
+                        + "    [user_id],\n"
+                        + "    [order_date],\n"
+                        + "    [total],\n"
+                        + "    [notes],\n"
+                        + "    [status]\n"
+                        + "FROM OrdersWithRowNumbers\n"
+                        + "WHERE RowNum = 1;";
                 ps = connection.prepareStatement(sql1);
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
                     int oid = rs.getInt(1);
-                    // Thêm thông tin chi tiết đơn hàng vào bảng OrderDetail cho từng sản phẩm trong giỏ hàng
+                    User u1 = new User();
+                    u.setId(rs.getInt(2));
+                    ordertoget = new Order(oid, u1, rs.getDate(3), rs.getFloat(4), rs.getString(5), rs.getInt(6));
                     for (CartItem item : cart.getItems()) {
-                        String sql2 = "insert into [OrderDetail] ([order_id],[product_id]  ,[price],[quantity]) values (?,?, ?, ?)";
+                        String sql2 = "insert into [OrderDetail] ([order_id],[product_id],[price],[quantity]) values (?, ?, ?, ?)";
                         ps = connection.prepareStatement(sql2);
                         ps.setInt(1, oid);
                         ps.setInt(2, item.getProduct().getId());
@@ -104,7 +129,7 @@ public class OrderDAO extends DBContext {
                     ps.setInt(2, item.getProduct().getId());
                     ps.executeUpdate();
                 }
-                return true; // Trả về true nếu thêm đơn hàng thành công
+                return ordertoget;
             }
         } catch (Exception e) {
             e.printStackTrace(); // In ra lỗi nếu có
@@ -121,20 +146,28 @@ public class OrderDAO extends DBContext {
                 ex.printStackTrace(); // In ra lỗi nếu có
             }
         }
-        return false; // Trả về false nếu có lỗi xảy ra hoặc không thêm được đơn hàng
+        return null;
     }
 
 // phuong thuc lay danh sach don hang cho mot ngioi dung cu the trong khoang thoi gian nhat dinh
     public ArrayList<Order> getAllOrderByuId(int uid, String fdate, String tdate, int offset, int noOfRecords) {
-        if (fdate.isEmpty()) {
+        if ("".equals(fdate)) {
             fdate = "1990-01-01";
         }
-        if (tdate.isEmpty()) {
+        if ("".equals(tdate)) {
             tdate = "2990-01-01";
         }
         ArrayList<Order> ol = new ArrayList<>();
-        String sql = "SELECT * FROM [Order] WHERE user_id = ? AND [order_date] BETWEEN ? AND ? "
-                + "ORDER BY [order_date] OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "SELECT o.*, a.address "
+                + "FROM [Order] o "
+                + "JOIN [OrderAddress] oa ON o.order_id = oa.order_id "
+                + "JOIN [Address] a ON oa.address_id = a.address_id "
+                + "JOIN [Users] u ON o.user_id = u.user_id "
+                + "WHERE o.user_id = ? "
+                + "AND o.order_date BETWEEN ? AND ? "
+                + "ORDER BY o.order_date "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, uid);
@@ -144,20 +177,31 @@ public class OrderDAO extends DBContext {
             ps.setInt(5, noOfRecords);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                ol.add(new Order(rs.getInt(1), new User(rs.getInt(2)), rs.getDate(3), rs.getDouble(4), rs.getString(5), rs.getInt(6)));
+                int orderId = rs.getInt("order_id");
+                Date orderDate = rs.getDate("order_date");
+                double amount = rs.getDouble("total");
+                int status = rs.getInt("status");
+                int userId = rs.getInt("user_id");
+                String address = rs.getString("address");
+                User user = new User(userId); // Create User object from userId
+                ol.add(new Order(orderId, user, orderDate, amount, status, address));
             }
             rs.close();
+            ps.close();
 
-            String countSql = "SELECT COUNT(*) FROM [Order] WHERE user_id = ? AND [order_date] BETWEEN ? AND ?";
+            // Count total records
+            String countSql = "SELECT COUNT(*) FROM [Order] WHERE user_id = ? AND order_date BETWEEN ? AND ?";
             PreparedStatement countPs = connection.prepareStatement(countSql);
             countPs.setInt(1, uid);
             countPs.setString(2, fdate);
             countPs.setString(3, tdate);
-            rs = countPs.executeQuery();
-            if (rs.next()) {
-                this.noOfRecords = rs.getInt(1);
+            ResultSet countRs = countPs.executeQuery();
+            if (countRs.next()) {
+                this.noOfRecords = countRs.getInt(1);
             }
-        } catch (Exception e) {
+            countRs.close();
+            countPs.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return ol;
@@ -223,9 +267,15 @@ public class OrderDAO extends DBContext {
         }
         ArrayList<Order> ol = new ArrayList<>();
 
-        String sql = "SELECT * FROM [Order] o JOIN Users u ON o.user_id = u.user_id WHERE (u.user_name LIKE ? OR u.phone LIKE ? OR u.address LIKE ? OR o.order_id LIKE ?) AND o.[order_date] BETWEEN ? AND ?";
+        String sql = "SELECT o.*, u.phone, u.user_name, a.address, o.payment_method, o.payment_status "
+                + "FROM [Order] o "
+                + "JOIN Users u ON o.user_id = u.user_id "
+                + "JOIN OrderAddress oa ON o.order_id = oa.order_id "
+                + "JOIN Address a ON oa.address_id = a.address_id "
+                + "WHERE (u.user_name LIKE ? OR u.phone LIKE ? OR o.order_id LIKE ? OR a.address LIKE ?) "
+                + "AND o.[order_date] BETWEEN ? AND ?";
 
-        // Thêm điều kiện status vào câu SQL nếu status khác null
+        // Add condition for status if not null or empty
         if (status != null && !"".equals(status)) {
             sql += " AND o.status = ?";
         }
@@ -241,7 +291,7 @@ public class OrderDAO extends DBContext {
             ps.setString(5, fdate);
             ps.setString(6, tdate);
 
-            // Đặt giá trị status nếu được cung cấp và khác null
+            // Set status parameter if not null or empty
             int parameterIndex = 7;
             if (status != null && !"".equals(status)) {
                 ps.setString(parameterIndex++, status);
@@ -251,14 +301,31 @@ public class OrderDAO extends DBContext {
             ps.setInt(parameterIndex++, noOfRecords);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                ol.add(new Order(rs.getInt(1), new User(rs.getInt(2)), rs.getDate(3), rs.getDouble(4), rs.getString(5), rs.getInt(6), rs.getString("phone"), rs.getString("user_name"), rs.getString("address")));
+                ol.add(new Order(rs.getInt(1), new User(rs.getInt(2)), rs.getDate(3), rs.getDouble(4), rs.getString(5), rs.getInt(6), rs.getString("phone"), rs.getString("user_name"), rs.getString("address"),
+                        rs.getString("payment_method"),
+                        rs.getString("payment_status")
+                ));
             }
 
-            // Đếm số lượng bản ghi
-            String countSql = "SELECT COUNT(*) FROM [Order] WHERE [order_date] BETWEEN ? AND ?";
+            // Count total records matching the criteria
+            String countSql = "SELECT COUNT(*) FROM [Order] o "
+                    + "JOIN OrderAddress oa ON o.order_id = oa.order_id "
+                    + "JOIN Address a ON oa.address_id = a.address_id "
+                    + "WHERE (u.user_name LIKE ? OR u.phone LIKE ? OR o.order_id LIKE ? OR a.address LIKE ?) "
+                    + "AND o.[order_date] BETWEEN ? AND ?";
+            if (status != null && !"".equals(status)) {
+                countSql += " AND o.status = ?";
+            }
             PreparedStatement countPs = connection.prepareStatement(countSql);
-            countPs.setString(1, fdate);
-            countPs.setString(2, tdate);
+            countPs.setString(1, "%" + search + "%");
+            countPs.setString(2, "%" + search + "%");
+            countPs.setString(3, "%" + search + "%");
+            countPs.setString(4, "%" + search + "%");
+            countPs.setString(5, fdate);
+            countPs.setString(6, tdate);
+            if (status != null && !"".equals(status)) {
+                countPs.setString(7, status);
+            }
             rs = countPs.executeQuery();
             if (rs.next()) {
                 this.noOfRecords = rs.getInt(1);
@@ -314,11 +381,30 @@ public class OrderDAO extends DBContext {
 
     public void updateStatusOrder(int status, int id) {
         try {
-            String sql = " update [Order] set status = " + status + " where [order_id] =" + id;
-            System.out.println(sql);
+            String sql = "UPDATE [Order] SET status = ?, "
+                    + "payment_status = CASE WHEN ? = 3 THEN 'Paid' ELSE payment_status END "
+                    + "WHERE [order_id] = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, status);
+            ps.setInt(2, status);
+            ps.setInt(3, id);
+            System.out.println("Executing SQL: " + sql + " with status = " + status + " and orderId = " + id);
             ps.executeUpdate();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateStatusPaymentStatus(String paymentStatus, int orderId) {
+        try {
+            String sql = "UPDATE [Order] SET payment_status = ?  WHERE [order_id] = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, paymentStatus);
+            ps.setInt(2, orderId);
+            System.out.println("Executing SQL: " + sql + " with paymentStatus = " + paymentStatus + " and orderId = " + orderId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(); // In ra lỗi nếu có
         }
     }
 
@@ -392,8 +478,9 @@ public class OrderDAO extends DBContext {
             int noOfRecords = 5; // Số lượng bản ghi trên mỗi trang
 
             // Gọi hàm getAllOrder từ OrderDAO
-            ArrayList<Order> orderList = orderDAO.getAllOrder("1", fdate, tdate, search, offset, noOfRecords);
-
+            ArrayList<Order> orderList = orderDAO.getAllOrderByuId(1, fdate, "2024-06-22", offset, noOfRecords);
+            int tttt = orderDAO.getTotalPage(1, fdate, tdate, 5);
+            System.out.println("ccc: " + tttt);
             // In ra thông tin về đơn hàng
             for (Order order : orderList) {
                 System.out.println("Order ID: " + order.getId());

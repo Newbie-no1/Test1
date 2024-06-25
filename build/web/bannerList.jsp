@@ -34,7 +34,7 @@
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#alignment-example" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
                     </button>
-                    <a class="navbar-brand" href="HomePage">Online Shop</a>
+                    <a class="navbar-brand" >Online Shop</a>
                 </div>
                 <!-- COLLAPSIBLE NAVBAR -->
                 <div class="collapse navbar-collapse" id="alignment-example">
@@ -65,8 +65,7 @@
 
             </div>
         </nav>
-        <!-- Main content -->
-        <div id="main-content" class="main-content">
+       <div id="main-content" class="main-content">
             <div class="container-fluid">
 
                 <div class="row" >
@@ -128,12 +127,125 @@
                                         <td>${p.getCreated_on()}</td>
 
 
-                                        <td ><a href="DeleteProduct?pid=${p.getId()}" class="btn- btn-danger  btn-lg" style="display: block;" > Delete</a></td>
-                                        <td> <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal${p.getId()}">Edit</button></td>
+                                        <td ><a href="DeleteBanner?bid=${p.getId()}" class="btn- btn-danger  btn-lg" style="display: block;" > Delete</a></td>
+                                        <td><a class="btn btn-primary"  data-toggle="modal" data-target="#EditModalUP${p.getId()}"><i class="fa fa-pencil-square-o" ></i></a></td>
+                                         <td><a class="btn btn-danger" data-toggle="modal" data-target="#View${p.getId()}"><i class="fa fa-eye"></i></a></td>
+                                                <c:if test="${p.isStatus()==true}">
+                                            <td><a class="btn btn-warning" href="ManageBanner?action=switch&fid=${p.getId()}&status=0">InActive</a></td>
+                                        </c:if>
+                                        <c:if test="${p.isStatus()==false}">
+                                            <td><a class="btn btn-success" href="ManageBanner?action=switch&fid=${p.getId()}&status=1">Active</a></td>
+                                        </c:if>
 
                                     </tr>
+                                <div class="modal fade" id="EditModalUP${p.getId()}" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+                                     data-keyboard="false">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <form action="ManageBanner">
+                                                    <input type="hidden" readonly="" name="action" value="edit">
+                                                    <div class="row">
+                                                        <div class="form-group  col-md-12">
+                                                            <span class="thong-tin-thanh-toan">
+                                                                <h5>Edit Feedback Information</h5>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group col-md-6">
+                                                            <label class="control-label">Title</label>
+                                                            <input class="form-control" type="text" readonly="" value="${p.getTitle()}">
+                                                            <input class="form-control" type="hidden" name="fid" readonly="" value="${p.getId()}">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="exampleSelect1" class="control-label">Backlink</label>
+                                                            <input class="form-control" type="text" id="stitle" value="${p.getBackLink()}" readonly="">
+                                                            <span id="invalid1" style="color: red;"> </span>
 
-                                </c:forEach>
+                                                        </div>
+
+
+
+                                                        <b>Img: </b><img style="width:150px;height:150px;"src="img/${p.getImg()}"><br>
+
+                                                        <div class="form-group col-md-12" style="
+                                                             text-align: center;
+                                                             ">
+                                                            <label class="control-label">Status</label><br>
+                                                            <input  type="radio" name="status" required="" value="1" ${p.isStatus()?"checked":""}> Inactive
+                                                            <input  type="radio" name="status" required="" value="0" ${p.isStatus()==false?"checked":""}> Active
+                                                        </div>
+                                                        
+
+                                                    </div>
+                                                    <br>
+                                                    <input class="btn btn-primary" type="submit" value="Save">
+                                                    <a class="btn btn-danger" data-dismiss="modal" href="#">Cancel</a>
+                                                    <br>
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="View${p.getId()}" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+                                     data-keyboard="false">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="form-group  col-md-12">
+                                                        <span class="thong-tin-thanh-toan">
+                                                            <h5>View Feedback Information</h5>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group col-md-6">
+                                                        <label class="control-label">Title</label>
+                                                        <input class="form-control" type="text" readonly="" value="${p.getTitle()}">
+                                                        <input class="form-control" type="hidden" name="fid" readonly="" value="${p.getId()}">
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label for="exampleSelect1" class="control-label">Backlink</label>
+                                                        <input class="form-control" type="text" id="stitle" value="${p.getBackLink()}" readonly="">
+                                                        <span id="invalid1" style="color: red;"> </span>
+
+                                                    </div>
+
+
+
+                                                    <b>Img: </b><img style="width:150px;height:150px;"src="img/${p.getImg()}"><br>
+
+                                                    
+                                                    
+
+                                                </div>
+                                                <div class="form-group col-md-12" style="
+                                                     text-align: center;
+                                                     ">
+                                                    <label class="control-label">Status: </label> 
+                                                    <c:if test="${p.isStatus()}">
+                                                        <span class="label label-success" style="font-size: 15px">Active</span>
+                                                    </c:if>
+                                                    <c:if test="${p.isStatus()==false}">
+                                                        <span class="label label-danger" style="font-size: 15px">False</span>
+                                                    </c:if>
+
+                                                </div>
+
+                                                <br>
+                                                <a class="btn btn-danger" data-dismiss="modal" href="#">Close</a>
+                                                <br>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </c:forEach>
                             </tbody>
                         </table>
                         <div style="display: flex; justify-content: center;">

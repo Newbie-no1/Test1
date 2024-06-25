@@ -144,4 +144,15 @@ public class BannerDAO extends DBContext {
         } catch (Exception e) {
         }
     }
+     public void updateStatusByFbID(String status, String fid) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("UPDATE [dbo].[Banner]\n"
+                    + "   SET [status] = ?\n"
+                    + " WHERE banner_id = ?");
+            ps.setString(1, status);
+            ps.setString(2, fid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+        }
+    }
 }
