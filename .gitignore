@@ -1,0 +1,10 @@
+# NetBeans specific files
+/nbproject/private/
+/nbproject/Makefile-*.mk
+/nbproject/Package-*.bash
+/nbproject/Package-*.sh
+/nbproject/configurations.xml
+
+# Build output directories
+/build/
+/dist/
